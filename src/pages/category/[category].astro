@@ -1,0 +1,63 @@
+---
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import ArticleCard from "../../components/ArticleCard.astro";
+import { SITE } from "../../config/site";
+import { absoluteUrl, breadcrumbSchema, type JsonLdNode } from "../../utils/seo";
+import { getPublishedArticles } from "../../utils/content";
+
+export async function getStaticPaths() {
+  const articles = await getPublishedArticles();
+  const categories = [...new Map(articles.filter((post) => post.data.categorySlug !== post.data.cluster.id).map((post) => [post.data.categorySlug, post.data.category])).entries()];
+  return categories.map(([slug, label]) => ({ params: { category: slug }, props: { slug, label } }));
+}
+
+const { slug, label } = Astro.props;
+const allArticles = await getPublishedArticles();
+const articles = allArticles.filter((post) => post.data.categorySlug === slug);
+const canonicalPath = `/category/${slug}`;
+const canonicalUrl = absoluteUrl(canonicalPath);
+const description = `Independent SmartAbodeLab guides, explainers, and practical recommendations about ${label}.`;
+
+const collectionSchema: JsonLdNode = {
+  "@type": "CollectionPage",
+  "@id": canonicalUrl,
+  url: canonicalUrl,
+  name: `${label} | ${SITE.name}`,
+  description,
+  inLanguage: SITE.language,
+  isPartOf: { "@id": SITE.websiteId },
+  about: { "@type": "Thing", name: label },
+  mainEntity: {
+    "@type": "ItemList",
+    numberOfItems: articles.length,
+    itemListElement: articles.map((article, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: absoluteUrl(`/articles/${article.id}`),
+      name: article.data.title
+    }))
+  }
+};
+
+const breadcrumbs = breadcrumbSchema([
+  { name: "Home", url: "/" },
+  { name: label, url: canonicalPath }
+]);
+---
+
+<SiteLayout
+  title={`${label} | SmartAbodeLab`}
+  description={description}
+  canonicalPath={canonicalPath}
+  jsonLd={[collectionSchema, breadcrumbs]}
+>
+  <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+    <nav aria-label="Breadcrumb" class="mb-7 flex items-center gap-2 text-xs font-semibold text-slate-500">
+      <a href="/" class="hover:text-brand-dark">Home</a><span aria-hidden="true">›</span><span aria-current="page" class="text-slate-700">{label}</span>
+    </nav>
+    <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-dark">SmartAbodeLab topic</p>
+    <h1 class="mt-2 text-4xl font-black tracking-[-0.045em] text-ink sm:text-5xl">{label}</h1>
+    <p class="mt-4 max-w-2xl text-base leading-7 text-slate-600">Independent guides, explainers, and practical recommendations for {label.toLowerCase()}.</p>
+    <div class="mt-9 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{articles.map((article) => <ArticleCard article={article} />)}</div>
+  </section>
+</SiteLayout>

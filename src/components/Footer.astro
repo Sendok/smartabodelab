@@ -1,0 +1,55 @@
+---
+import Logo from "./Logo.astro";
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-20 border-t border-slate-200 bg-white">
+  <div class="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
+    <div>
+      <Logo />
+      <p class="mt-4 max-w-sm text-sm leading-6 text-slate-600">Practical, evidence-aware guidance for smarter homes, lower energy use, and better urban living.</p>
+      <p class="mt-4 text-xs leading-5 text-slate-500">Our articles identify authorship, sourcing, methodology, commercial disclosures, and material corrections when applicable.</p>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-extrabold text-ink">Explore</h2>
+      <div class="mt-4 grid gap-3 text-sm font-semibold text-slate-600">
+        <a class="hover:text-brand-dark" href="/topics/smart-energy">Smart Energy</a>
+        <a class="hover:text-brand-dark" href="/topics/home-automation">Home Automation</a>
+        <a class="hover:text-brand-dark" href="/topics/urban-living">Urban Living</a>
+        <a class="hover:text-brand-dark" href="/topics/reviews">Reviews</a>
+        <a class="hover:text-brand-dark" href="/rss.xml">RSS Feed</a>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-extrabold text-ink">Editorial Standards</h2>
+      <div class="mt-4 grid gap-3 text-sm font-semibold text-slate-600">
+        <a class="hover:text-brand-dark" href="/about">About SmartAbodeLab</a>
+        <a class="hover:text-brand-dark" href="/masthead">Masthead</a>
+        <a class="hover:text-brand-dark" href="/editorial-policy">Editorial Policy</a>
+        <a class="hover:text-brand-dark" href="/review-methodology">Review Methodology</a>
+        <a class="hover:text-brand-dark" href="/fact-checking-policy">Fact-Checking Policy</a>
+        <a class="hover:text-brand-dark" href="/corrections-policy">Corrections Policy</a>
+        <a class="hover:text-brand-dark" href="/affiliate-disclosure">Affiliate Disclosure</a>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-extrabold text-ink">Legal & Help</h2>
+      <div class="mt-4 grid gap-3 text-sm font-semibold text-slate-600">
+        <a class="hover:text-brand-dark" href="/privacy">Privacy Policy</a>
+        <a class="hover:text-brand-dark" href="/terms">Terms of Service</a>
+        <a class="hover:text-brand-dark" href="/gdpr-consent">GDPR Consent</a>
+        <a class="hover:text-brand-dark" href="/contact">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-slate-200">
+    <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-xs text-slate-500 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+      <p>© {year} SmartAbodeLab. All rights reserved.</p>
+      <p>Independent editorial · Clear sourcing · Transparent disclosures</p>
+    </div>
+  </div>
+</footer>

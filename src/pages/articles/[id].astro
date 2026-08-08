@@ -1,0 +1,36 @@
+---
+import { getCollection, getEntry, render } from "astro:content";
+import ArticleLayout from "../../layouts/ArticleLayout.astro";
+import { getClusterArticles, getRelatedArticles } from "../../utils/recommendations";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("articles", ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const author = await getEntry(post.data.author);
+if (!author) throw new Error(`Author not found for article: ${post.id}`);
+
+const reviewer = post.data.reviewedBy ? await getEntry(post.data.reviewedBy) : undefined;
+const factChecker = post.data.factCheckedBy ? await getEntry(post.data.factCheckedBy) : undefined;
+const cluster = await getEntry(post.data.cluster);
+if (!cluster) throw new Error(`Topic cluster not found for article: ${post.id}`);
+
+const related = await getRelatedArticles(post, 4);
+const clusterArticles = await getClusterArticles(cluster.id, post.id, 5);
+const { Content, headings } = await render(post);
+---
+
+<ArticleLayout
+  post={post}
+  author={author}
+  reviewer={reviewer}
+  factChecker={factChecker}
+  cluster={cluster}
+  clusterArticles={clusterArticles}
+  related={related}
+  headings={headings}
+>
+  <Content />
+</ArticleLayout>

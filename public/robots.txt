@@ -1,0 +1,15 @@
+# SmartAbodeLab robots policy
+# Public editorial content is crawlable for search discovery.
+
+User-agent: *
+Allow: /
+
+# ChatGPT Search discovery and citations.
+User-agent: OAI-SearchBot
+Allow: /
+
+# Search visibility is allowed above; model-training crawling is opted out separately.
+User-agent: GPTBot
+Disallow: /
+
+Sitemap: https://smartabodelab.com/sitemap.xml

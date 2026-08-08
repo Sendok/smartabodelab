@@ -1,0 +1,20 @@
+{
+  "name": "smartabodelab-phase3-content-engine",
+  "type": "module",
+  "version": "5.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "node scripts/editorial-readiness.mjs && node scripts/content-engine-audit.mjs && node scripts/setup-indexnow.mjs && astro build",
+    "preview": "astro preview",
+    "indexnow": "node scripts/indexnow.mjs",
+    "editorial:check": "node scripts/editorial-readiness.mjs --strict",
+    "content:audit": "node scripts/content-engine-audit.mjs",
+    "content:brief": "node scripts/content-brief.mjs",
+    "article:new": "node scripts/new-article.mjs"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "4.3.3",
+    "astro": "7.1.4",
+    "tailwindcss": "4.3.3"
+  }
+}

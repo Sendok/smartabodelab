@@ -1,0 +1,22 @@
+---
+interface ComparisonData {
+  options: string[];
+  rows: Array<{ criterion: string; values: string[] }>;
+  bottomLine: string;
+}
+interface Props { comparison: ComparisonData }
+const { comparison } = Astro.props;
+---
+<section class="mt-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm" aria-labelledby="comparison-title">
+  <div class="p-5 sm:p-6">
+    <p class="text-xs font-black uppercase tracking-[0.16em] text-brand-dark">At a glance</p>
+    <h2 id="comparison-title" class="mt-1 text-2xl font-black tracking-tight text-ink">Comparison snapshot</h2>
+  </div>
+  <div class="overflow-x-auto border-y border-slate-200">
+    <table class="min-w-full border-collapse text-left text-sm">
+      <thead class="bg-slate-50 text-ink"><tr><th class="min-w-36 px-4 py-3 font-extrabold">Criterion</th>{comparison.options.map((option) => <th class="min-w-40 px-4 py-3 font-extrabold">{option}</th>)}</tr></thead>
+      <tbody>{comparison.rows.map((row) => <tr class="border-t border-slate-200"><th class="px-4 py-3 font-bold text-slate-700">{row.criterion}</th>{row.values.map((value) => <td class="px-4 py-3 leading-6 text-slate-600">{value}</td>)}</tr>)}</tbody>
+    </table>
+  </div>
+  <div class="bg-emerald-50 p-5 text-sm leading-6 text-slate-700 sm:p-6"><strong class="text-brand-dark">Bottom line:</strong> {comparison.bottomLine}</div>
+</section>

@@ -1,0 +1,15 @@
+---
+interface Props { answer: string; label?: string }
+const { answer, label = "Quick answer" } = Astro.props;
+---
+<section class="rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm sm:p-6" aria-labelledby="direct-answer-title">
+  <div class="flex items-start gap-3">
+    <span class="mt-0.5 grid size-9 shrink-0 place-items-center rounded-xl bg-emerald-100 text-brand-dark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg>
+    </span>
+    <div>
+      <p id="direct-answer-title" class="text-xs font-black uppercase tracking-[0.16em] text-brand-dark">{label}</p>
+      <p class="mt-2 max-w-3xl text-base font-semibold leading-7 text-slate-700 sm:text-lg">{answer}</p>
+    </div>
+  </div>
+</section>

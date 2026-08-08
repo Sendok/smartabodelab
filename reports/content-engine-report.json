@@ -1,0 +1,100 @@
+{
+  "generatedAt": "2026-08-07T23:26:00.352Z",
+  "articleCount": 6,
+  "clusterCount": 4,
+  "coverage": {
+    "urban-living": {
+      "total": 2,
+      "awareness": 2,
+      "consideration": 0,
+      "decision": 0,
+      "types": {
+        "guide": 2
+      }
+    },
+    "smart-energy": {
+      "total": 2,
+      "awareness": 0,
+      "consideration": 2,
+      "decision": 0,
+      "types": {
+        "guide": 2
+      }
+    },
+    "home-automation": {
+      "total": 1,
+      "awareness": 0,
+      "consideration": 1,
+      "decision": 0,
+      "types": {
+        "comparison": 1
+      }
+    },
+    "reviews": {
+      "total": 1,
+      "awareness": 0,
+      "consideration": 1,
+      "decision": 0,
+      "types": {
+        "explainer": 1
+      }
+    }
+  },
+  "suggestions": {
+    "apartment-energy-audit": [
+      {
+        "id": "small-space-automation",
+        "title": "7 Automations That Make a Small Apartment Feel Bigger",
+        "suggestedAnchor": "small apartment automation ideas",
+        "score": 25
+      },
+      {
+        "id": "heat-pump-apartment",
+        "title": "Can a Heat Pump Work in an Apartment?",
+        "suggestedAnchor": "heat pump for apartment",
+        "score": 14
+      }
+    ],
+    "heat-pump-apartment": [
+      {
+        "id": "apartment-energy-audit",
+        "title": "A 30-Minute Apartment Energy Audit You Can Do Tonight",
+        "suggestedAnchor": "apartment energy audit",
+        "score": 14
+      }
+    ],
+    "matter-vs-zigbee": [],
+    "small-space-automation": [
+      {
+        "id": "apartment-energy-audit",
+        "title": "A 30-Minute Apartment Energy Audit You Can Do Tonight",
+        "suggestedAnchor": "apartment energy audit",
+        "score": 25
+      }
+    ],
+    "smart-plugs-tested": [],
+    "smart-thermostat-savings-guide": [
+      {
+        "id": "heat-pump-apartment",
+        "title": "Can a Heat Pump Work in an Apartment?",
+        "suggestedAnchor": "heat pump for apartment",
+        "score": 34
+      }
+    ]
+  },
+  "errors": [],
+  "warnings": [
+    "urban-living: only 2 published sample article(s); build toward at least a small multi-page cluster.",
+    "urban-living: no consideration-stage article.",
+    "urban-living: no decision-stage article.",
+    "smart-energy: only 2 published sample article(s); build toward at least a small multi-page cluster.",
+    "smart-energy: no awareness-stage article.",
+    "smart-energy: no decision-stage article.",
+    "home-automation: only 1 published sample article(s); build toward at least a small multi-page cluster.",
+    "home-automation: no awareness-stage article.",
+    "home-automation: no decision-stage article.",
+    "reviews: only 1 published sample article(s); build toward at least a small multi-page cluster.",
+    "reviews: no awareness-stage article.",
+    "reviews: no decision-stage article."
+  ]
+}

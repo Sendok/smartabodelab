@@ -1,0 +1,21 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { formatDate } from "../utils/content";
+
+interface Props {
+  corrections: CollectionEntry<"articles">["data"]["corrections"];
+}
+const { corrections } = Astro.props;
+---
+
+{corrections.length > 0 && (
+  <aside class="not-prose mt-10 rounded-2xl border border-amber-200 bg-amber-50 p-5" aria-labelledby="corrections-title">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <p id="corrections-title" class="text-xs font-black uppercase tracking-[0.16em] text-amber-950">Corrections & updates</p>
+      <a href="/corrections-policy" class="text-xs font-extrabold text-amber-950 hover:underline underline-offset-4">Our corrections policy →</a>
+    </div>
+    <ul class="mt-3 grid gap-3 text-sm leading-6 text-amber-950">
+      {corrections.map((item) => <li><strong>{formatDate(item.date)}:</strong> {item.summary}</li>)}
+    </ul>
+  </aside>
+)}

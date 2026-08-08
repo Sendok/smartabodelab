@@ -1,0 +1,204 @@
+---
+import type { CollectionEntry } from "astro:content";
+import SiteLayout from "./SiteLayout.astro";
+import ArticleCard from "../components/ArticleCard.astro";
+import AdSlot from "../components/AdSlot.astro";
+import TableOfContents from "../components/TableOfContents.astro";
+import Newsletter from "../components/Newsletter.astro";
+import ArticleTransparency from "../components/ArticleTransparency.astro";
+import SourcesReferences from "../components/SourcesReferences.astro";
+import CorrectionNotice from "../components/CorrectionNotice.astro";
+import DirectAnswer from "../components/content-engine/DirectAnswer.astro";
+import FAQSection from "../components/content-engine/FAQSection.astro";
+import ReviewSummary from "../components/content-engine/ReviewSummary.astro";
+import ComparisonSnapshot from "../components/content-engine/ComparisonSnapshot.astro";
+import TopicNavigator from "../components/content-engine/TopicNavigator.astro";
+import { SITE } from "../config/site";
+import { absoluteUrl, breadcrumbSchema, type JsonLdNode } from "../utils/seo";
+import { formatDate } from "../utils/content";
+
+interface Props {
+  post: CollectionEntry<"articles">;
+  author: CollectionEntry<"authors">;
+  reviewer?: CollectionEntry<"authors">;
+  factChecker?: CollectionEntry<"authors">;
+  cluster: CollectionEntry<"clusters">;
+  clusterArticles: CollectionEntry<"articles">[];
+  related: CollectionEntry<"articles">[];
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { post, author, reviewer, factChecker, cluster, clusterArticles, related, headings } = Astro.props;
+const title = post.data.seoTitle ?? `${post.data.title} | SmartAbodeLab`;
+const description = post.data.seoDescription ?? post.data.description;
+const canonicalPath = `/articles/${post.id}`;
+const canonicalUrl = absoluteUrl(canonicalPath);
+const webPageId = `${canonicalUrl}#webpage`;
+const authorUrl = absoluteUrl(`/author/${author.id}`);
+const clusterUrl = absoluteUrl(`/topics/${cluster.id}`);
+const categoryHref = post.data.categorySlug === cluster.id ? `/topics/${cluster.id}` : `/category/${post.data.categorySlug}`;
+const absoluteImage = absoluteUrl(post.data.image);
+const modifiedAt = post.data.updatedAt ?? post.data.publishedAt;
+const wasUpdated = modifiedAt.getTime() > post.data.publishedAt.getTime();
+const authorSameAs = [author.data.twitter, author.data.linkedin, author.data.website].filter(Boolean) as string[];
+const sourceUrls = post.data.sources.map((source) => source.url);
+const keywordSet = [...new Set([post.data.primaryKeyword, ...post.data.secondaryKeywords, ...post.data.tags])];
+const aboutSet = [...new Set([cluster.data.primaryKeyword, ...post.data.tags, ...post.data.entities])];
+
+const personNode = (entry: CollectionEntry<"authors">) => ({
+  "@type": "Person",
+  "@id": `${absoluteUrl(`/author/${entry.id}`)}#person`,
+  name: entry.data.name,
+  url: absoluteUrl(`/author/${entry.id}`),
+  jobTitle: entry.data.role
+});
+
+const reviewedBy = [reviewer, factChecker].filter(Boolean).map((entry) => personNode(entry as CollectionEntry<"authors">));
+
+const articleSchema: JsonLdNode = {
+  "@type": "BlogPosting",
+  "@id": `${canonicalUrl}#article`,
+  url: canonicalUrl,
+  headline: post.data.title,
+  description,
+  image: { "@type": "ImageObject", url: absoluteImage },
+  thumbnailUrl: absoluteImage,
+  datePublished: post.data.publishedAt.toISOString(),
+  dateModified: modifiedAt.toISOString(),
+  inLanguage: SITE.language,
+  isAccessibleForFree: true,
+  articleSection: post.data.category,
+  genre: post.data.contentType,
+  keywords: keywordSet,
+  about: aboutSet.map((name) => ({ "@type": "Thing", name })),
+  mentions: post.data.entities.map((name) => ({ "@type": "Thing", name })),
+  publishingPrinciples: absoluteUrl(SITE.editorial.principles),
+  ...(sourceUrls.length > 0 ? { citation: sourceUrls } : {}),
+  ...(reviewer ? { editor: personNode(reviewer) } : {}),
+  ...(post.data.corrections.length > 0 ? {
+    correction: post.data.corrections.map((item) => ({
+      "@type": "CorrectionComment",
+      dateCreated: item.date.toISOString(),
+      text: item.summary
+    }))
+  } : {}),
+  author: {
+    "@type": "Person",
+    "@id": `${authorUrl}#person`,
+    name: author.data.name,
+    url: authorUrl,
+    jobTitle: author.data.role,
+    ...(authorSameAs.length > 0 ? { sameAs: authorSameAs } : {})
+  },
+  publisher: { "@id": SITE.organizationId },
+  isPartOf: [
+    { "@id": SITE.websiteId },
+    { "@id": clusterUrl }
+  ],
+  mainEntityOfPage: { "@id": webPageId }
+};
+
+const webPageSchema: JsonLdNode = {
+  "@type": "WebPage",
+  "@id": webPageId,
+  url: canonicalUrl,
+  name: post.data.title,
+  description,
+  inLanguage: SITE.language,
+  isPartOf: { "@id": SITE.websiteId },
+  mainEntity: { "@id": `${canonicalUrl}#article` },
+  ...(reviewedBy.length > 0 ? { reviewedBy } : {})
+};
+
+const breadcrumbs = breadcrumbSchema([
+  { name: "Home", url: "/" },
+  { name: cluster.data.title, url: `/topics/${cluster.id}` },
+  { name: post.data.title, url: canonicalUrl }
+]);
+---
+
+<SiteLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+  ogImage={absoluteImage}
+  type="article"
+  jsonLd={[webPageSchema, articleSchema, breadcrumbs]}
+  publishedTime={post.data.publishedAt.toISOString()}
+  modifiedTime={modifiedAt.toISOString()}
+  articleSection={post.data.category}
+  tags={post.data.tags}
+  authorName={author.data.name}
+>
+  <article>
+    <header class="border-b border-slate-200 bg-white">
+      <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">
+          <a href="/" class="hover:text-brand-dark">Home</a><span aria-hidden="true">›</span>
+          <a href={`/topics/${cluster.id}`} class="hover:text-brand-dark">{cluster.data.title}</a><span aria-hidden="true">›</span>
+          <span class="max-w-[55ch] truncate text-slate-700" aria-current="page">{post.data.title}</span>
+        </nav>
+
+        <div class="mt-7 max-w-4xl">
+          <div class="flex flex-wrap gap-2">
+            <a href={categoryHref} class="inline-flex rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-extrabold text-brand-dark ring-1 ring-inset ring-emerald-200">{post.data.category.toUpperCase()}</a>
+            {post.data.originalResearch && <span class="inline-flex rounded-full bg-amber-50 px-3 py-1.5 text-xs font-extrabold text-amber-950 ring-1 ring-inset ring-amber-200">ORIGINAL RESEARCH</span>}
+          </div>
+          <h1 class="mt-5 text-4xl font-black leading-[1.03] tracking-[-0.05em] text-ink sm:text-5xl lg:text-6xl">{post.data.title}</h1>
+          <p class="mt-5 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">{post.data.description}</p>
+
+          <div class="mt-7 flex flex-wrap items-center gap-x-4 gap-y-3 text-sm text-slate-600">
+            <div class="flex items-center gap-3">
+              <img src={author.data.avatar} alt={author.data.name} width="44" height="44" class="size-11 rounded-full object-cover ring-2 ring-white" />
+              <div><a href={`/author/${author.id}`} rel="author" class="font-extrabold text-ink hover:text-brand-dark">{author.data.name}</a><p class="text-xs text-slate-500">{author.data.role}</p></div>
+            </div>
+            <span class="hidden text-slate-300 sm:inline">|</span>
+            <time datetime={post.data.publishedAt.toISOString()} class="font-semibold">Published {formatDate(post.data.publishedAt)}</time>
+            {wasUpdated && <><span class="text-slate-300">•</span><time datetime={modifiedAt.toISOString()} class="font-semibold">Updated {formatDate(modifiedAt)}</time></>}
+            <span class="text-slate-300">•</span><span class="font-semibold">{post.data.readTime}</span>
+          </div>
+
+          {reviewer && <p class="mt-4 text-xs font-semibold text-slate-500">Editorially reviewed by <a href={`/author/${reviewer.id}`} class="font-extrabold text-slate-700 hover:text-brand-dark">{reviewer.data.name}</a>{post.data.reviewedAt && <> on {formatDate(post.data.reviewedAt)}</>}.</p>}
+          {post.data.tags.length > 0 && <div class="mt-5 flex flex-wrap gap-2" aria-label="Article topics">{post.data.tags.map((tag) => <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">{tag}</span>)}</div>}
+        </div>
+
+        <div class="mt-8 max-w-4xl"><AdSlot label="Top Banner Slot" size="728 × 90" class="min-h-[90px]" /></div>
+      </div>
+    </header>
+
+    <div class="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,7fr)_minmax(280px,3fr)] lg:px-8 lg:py-14 xl:gap-14">
+      <div class="min-w-0">
+        <figure class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"><img src={post.data.image} alt={post.data.imageAlt} width="1280" height="720" fetchpriority="high" decoding="async" class="aspect-video w-full object-cover" /></figure>
+
+        {post.data.directAnswer && <div class="mt-7"><DirectAnswer answer={post.data.directAnswer} /></div>}
+        <div class="mt-7"><TableOfContents headings={headings} /></div>
+
+        {post.data.keyTakeaways.length > 0 && <section class="mt-7 rounded-2xl border border-emerald-200 bg-emerald-50 p-5 sm:p-6" aria-labelledby="key-takeaways-title"><p id="key-takeaways-title" class="text-xs font-black uppercase tracking-[0.16em] text-brand-dark">Key takeaways</p><ul class="mt-3 grid gap-2 pl-5 text-sm leading-6 text-slate-700">{post.data.keyTakeaways.map((item) => <li class="list-disc">{item}</li>)}</ul></section>}
+
+        {post.data.reviewSummary && <ReviewSummary review={post.data.reviewSummary} />}
+        {post.data.comparisonSummary && <ComparisonSnapshot comparison={post.data.comparisonSummary} />}
+
+        <ArticleTransparency post={post} author={author} reviewer={reviewer} factChecker={factChecker} />
+        <div class="article-prose mt-9" data-article-prose><slot /></div>
+        <FAQSection items={post.data.questions} />
+        <SourcesReferences sources={post.data.sources} />
+        <CorrectionNotice corrections={post.data.corrections} />
+
+        <section class="mt-12 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8" aria-labelledby="author-bio-title">
+          <div class="flex flex-col gap-5 sm:flex-row"><img src={author.data.avatar} alt={author.data.name} width="96" height="96" loading="lazy" class="size-20 shrink-0 rounded-2xl object-cover sm:size-24" /><div><p class="text-xs font-black uppercase tracking-[0.16em] text-brand-dark">About the author</p><h2 id="author-bio-title" class="mt-1 text-xl font-black tracking-tight text-ink">{author.data.name}</h2><p class="mt-2 text-sm leading-6 text-slate-600">{author.data.bio}</p><a href={`/author/${author.id}`} rel="author" class="mt-3 inline-flex text-sm font-extrabold text-brand-dark hover:underline underline-offset-4">More from {author.data.name.split(" ")[0]} →</a></div></div>
+        </section>
+        <div class="mt-10"><Newsletter /></div>
+      </div>
+
+      <aside class="min-w-0" aria-label="Article sidebar">
+        <div class="space-y-6 lg:sticky lg:top-24">
+          <TopicNavigator cluster={cluster} articles={clusterArticles} />
+          <AdSlot label="Sticky Sidebar Ad Slot" size="300 × 600 Half-Page" class="mx-auto min-h-[600px] max-w-[300px]" />
+          <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-xs font-black uppercase tracking-[0.16em] text-brand-dark">Editorial standard</p><h2 class="mt-2 text-lg font-black leading-snug tracking-tight text-ink">Useful advice, clear trade-offs.</h2><p class="mt-2 text-sm leading-6 text-slate-600">We distinguish research from hands-on testing and surface sources, reviewers, disclosures, and material corrections when applicable.</p><div class="mt-4 grid gap-2 text-sm font-extrabold text-brand-dark"><a href="/editorial-policy" class="hover:underline underline-offset-4">Editorial policy →</a><a href="/review-methodology" class="hover:underline underline-offset-4">Review methodology →</a></div></section>
+        </div>
+      </aside>
+    </div>
+
+    {related.length > 0 && <section class="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8" aria-labelledby="related-title"><p class="text-xs font-black uppercase tracking-[0.16em] text-brand-dark">Semantic recommendations</p><h2 id="related-title" class="mt-2 text-3xl font-black tracking-[-0.04em] text-ink">Related reading</h2><p class="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Selected from topic cluster, entities, tags, search intent, and editorial relationships.</p><div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">{related.map((item) => <ArticleCard article={item} />)}</div></section>}
+  </article>
+</SiteLayout>

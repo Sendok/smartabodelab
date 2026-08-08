@@ -1,0 +1,112 @@
+---
+import { getCollection } from "astro:content";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import ArticleCard from "../../components/ArticleCard.astro";
+import { SITE } from "../../config/site";
+import { absoluteUrl, breadcrumbSchema, type JsonLdNode } from "../../utils/seo";
+import { getPublishedArticles } from "../../utils/content";
+
+export async function getStaticPaths() {
+  const authors = await getCollection("authors");
+  return authors.map((author) => ({ params: { author: author.id }, props: { author } }));
+}
+
+const { author } = Astro.props;
+const allArticles = await getPublishedArticles();
+const articles = allArticles.filter((post) => post.data.author.id === author.id);
+const reviewedArticles = allArticles.filter((post) => post.data.reviewedBy?.id === author.id || post.data.factCheckedBy?.id === author.id);
+const canonicalPath = `/author/${author.id}`;
+const authorUrl = absoluteUrl(canonicalPath);
+const sameAs = [author.data.twitter, author.data.linkedin, author.data.website].filter(Boolean) as string[];
+
+const profileSchema: JsonLdNode = {
+  "@type": "ProfilePage",
+  "@id": authorUrl,
+  url: authorUrl,
+  name: `${author.data.name} | ${SITE.name}`,
+  description: author.data.bio,
+  inLanguage: SITE.language,
+  mainEntity: {
+    "@type": "Person",
+    "@id": `${authorUrl}#person`,
+    name: author.data.name,
+    url: authorUrl,
+    image: absoluteUrl(author.data.avatar),
+    jobTitle: author.data.role,
+    description: author.data.bio,
+    worksFor: { "@id": SITE.organizationId },
+    ...(author.data.expertise.length > 0 ? { knowsAbout: author.data.expertise } : {}),
+    ...(author.data.credentials.length > 0 ? {
+      hasCredential: author.data.credentials.map((name) => ({
+        "@type": "EducationalOccupationalCredential",
+        name
+      }))
+    } : {}),
+    ...(sameAs.length > 0 ? { sameAs } : {})
+  }
+};
+
+const breadcrumbs = breadcrumbSchema([
+  { name: "Home", url: "/" },
+  { name: author.data.name, url: canonicalPath }
+]);
+---
+
+<SiteLayout
+  title={`${author.data.name} | SmartAbodeLab`}
+  description={author.data.bio}
+  canonicalPath={canonicalPath}
+  ogImage={author.data.avatar}
+  jsonLd={[profileSchema, breadcrumbs]}
+>
+  <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+    <nav aria-label="Breadcrumb" class="mb-7 flex items-center gap-2 text-xs font-semibold text-slate-500">
+      <a href="/" class="hover:text-brand-dark">Home</a><span aria-hidden="true">›</span><span aria-current="page" class="text-slate-700">{author.data.name}</span>
+    </nav>
+
+    <div class="max-w-4xl rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-center">
+        <img src={author.data.avatar} alt={author.data.name} width="144" height="144" class="size-28 rounded-3xl object-cover sm:size-36" />
+        <div>
+          <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-dark">SmartAbodeLab author</p>
+          <h1 class="mt-2 text-4xl font-black tracking-[-0.045em] text-ink">{author.data.name}</h1>
+          <p class="mt-2 font-bold text-slate-600">{author.data.role}</p>
+          <p class="mt-4 text-base leading-7 text-slate-600">{author.data.bio}</p>
+        </div>
+      </div>
+
+      {(author.data.experience || author.data.credentials.length > 0 || author.data.expertise.length > 0) && (
+        <div class="mt-7 grid gap-6 border-t border-slate-100 pt-6 md:grid-cols-2">
+          <div>
+            <h2 class="text-sm font-black text-ink">Expertise</h2>
+            {author.data.expertise.length > 0 ? (
+              <div class="mt-3 flex flex-wrap gap-2" aria-label="Areas of expertise">
+                {author.data.expertise.map((item) => <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-extrabold text-brand-dark">{item}</span>)}
+              </div>
+            ) : <p class="mt-2 text-sm text-slate-500">Expertise information has not been added.</p>}
+          </div>
+          <div>
+            {author.data.experience && <><h2 class="text-sm font-black text-ink">Experience</h2><p class="mt-2 text-sm leading-6 text-slate-600">{author.data.experience}</p></>}
+            {author.data.credentials.length > 0 && <><h2 class="mt-5 text-sm font-black text-ink">Credentials</h2><ul class="mt-2 grid gap-1 text-sm leading-6 text-slate-600">{author.data.credentials.map((item) => <li>• {item}</li>)}</ul></>}
+          </div>
+        </div>
+      )}
+
+      <div class="mt-7 flex flex-wrap gap-3 border-t border-slate-100 pt-5 text-xs font-bold text-slate-500">
+        <span>{articles.length} article{articles.length === 1 ? "" : "s"} written</span>
+        {reviewedArticles.length > 0 && <><span>•</span><span>{reviewedArticles.length} article{reviewedArticles.length === 1 ? "" : "s"} reviewed or fact checked</span></>}
+        <span>•</span><a href="/editorial-policy" class="text-brand-dark hover:underline underline-offset-4">Editorial standards</a>
+      </div>
+    </div>
+
+    <h2 class="mt-12 text-2xl font-black tracking-tight text-ink">Latest articles</h2>
+    <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{articles.map((article) => <ArticleCard article={article} />)}</div>
+
+    {reviewedArticles.length > 0 && (
+      <>
+        <h2 class="mt-12 text-2xl font-black tracking-tight text-ink">Reviewed or fact-checked</h2>
+        <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{reviewedArticles.map((article) => <ArticleCard article={article} />)}</div>
+      </>
+    )}
+  </section>
+</SiteLayout>

@@ -1,0 +1,15 @@
+---
+import type { CollectionEntry } from "astro:content";
+interface Props {
+  cluster: CollectionEntry<"clusters">;
+  articles: CollectionEntry<"articles">[];
+}
+const { cluster, articles } = Astro.props;
+---
+<section class="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5 shadow-sm" aria-labelledby="topic-nav-title">
+  <p class="text-xs font-black uppercase tracking-[0.16em] text-brand-dark">Topic cluster</p>
+  <h2 id="topic-nav-title" class="mt-1 text-lg font-black tracking-tight text-ink">{cluster.data.title}</h2>
+  <p class="mt-2 text-sm leading-6 text-slate-600">{cluster.data.shortDescription}</p>
+  {articles.length > 0 && <div class="mt-4 grid gap-2.5">{articles.slice(0, 4).map((article) => <a href={`/articles/${article.id}`} class="text-sm font-bold leading-5 text-slate-700 hover:text-brand-dark hover:underline underline-offset-4">{article.data.title}</a>)}</div>}
+  <a href={`/topics/${cluster.id}`} class="mt-5 inline-flex text-sm font-extrabold text-brand-dark hover:underline underline-offset-4">Explore the full {cluster.data.title} guide →</a>
+</section>

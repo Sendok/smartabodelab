@@ -1,0 +1,232 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #059669;
+  --color-brand-dark: #064e3b;
+  --color-ink: #0f172a;
+  --color-page: #f8fafc;
+  --color-warm: #d97706;
+  --font-sans: Inter, "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+:root {
+  color-scheme: light;
+  --header-height: 72px;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #f8fafc;
+}
+
+body {
+  margin: 0;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #d1fae5;
+  color: #064e3b;
+}
+
+a,
+button,
+input,
+summary {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 3px solid #065f46;
+  outline-offset: 3px;
+}
+
+.article-prose {
+  font-size: 1.0625rem;
+  line-height: 1.85;
+  color: #334155;
+}
+
+.article-prose > * + * {
+  margin-top: 1.5rem;
+}
+
+.article-prose h2 {
+  scroll-margin-top: 7rem;
+  margin-top: 3.5rem;
+  font-size: clamp(1.65rem, 2vw, 2.15rem);
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.article-prose h3 {
+  scroll-margin-top: 7rem;
+  margin-top: 2.5rem;
+  font-size: 1.3rem;
+  line-height: 1.35;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.article-prose p {
+  max-width: 72ch;
+}
+
+.article-prose a {
+  color: #064e3b;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: #6ee7b7;
+  text-underline-offset: 4px;
+}
+
+.article-prose strong {
+  color: #0f172a;
+}
+
+.article-prose ul,
+.article-prose ol {
+  padding-left: 1.35rem;
+}
+
+.article-prose ul {
+  list-style: disc;
+}
+
+.article-prose ol {
+  list-style: decimal;
+}
+
+.article-prose li + li {
+  margin-top: 0.65rem;
+}
+
+.article-prose blockquote {
+  border-left: 4px solid #059669;
+  border-radius: 0 1rem 1rem 0;
+  background: #ecfdf5;
+  padding: 1.25rem 1.5rem;
+  color: #14532d;
+  font-size: 1.1rem;
+  font-weight: 650;
+}
+
+.article-prose code {
+  border: 1px solid #cbd5e1;
+  border-radius: 0.4rem;
+  background: #f1f5f9;
+  padding: 0.15rem 0.35rem;
+  color: #0f172a;
+  font-size: 0.9em;
+}
+
+.article-prose pre {
+  overflow-x: auto;
+  border-radius: 1rem;
+  background: #0f172a;
+  padding: 1.25rem;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.article-prose pre code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+dialog::backdrop {
+  background: rgb(15 23 42 / 0.58);
+  backdrop-filter: blur(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+.article-prose .article-ad-slot {
+  display: flex;
+  min-height: 180px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0;
+  border: 1px dashed #cbd5e1;
+  border-radius: 1rem;
+  background: rgb(248 250 252 / 0.82);
+  padding: 1.5rem;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.article-prose .article-ad-slot span {
+  max-width: 36rem;
+}
+
+.article-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  background: #fff;
+  font-size: 0.95rem;
+}
+
+.article-prose thead {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.article-prose th,
+.article-prose td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.article-prose th {
+  font-weight: 800;
+}
+
+.article-prose tbody tr:last-child th,
+.article-prose tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.article-prose hr {
+  margin: 3rem 0;
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+}

@@ -1,0 +1,22 @@
+---
+interface Props {
+  label: string;
+  size?: string;
+  class?: string;
+}
+
+const { label, size = "Responsive", class: className = "" } = Astro.props;
+---
+
+<div
+  class:list={[
+    "not-prose flex min-h-24 w-full items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 px-4 py-6 text-center",
+    className
+  ]}
+  aria-label={`${label} advertising placeholder`}
+>
+  <div>
+    <p class="text-[10px] font-extrabold uppercase tracking-[0.2em] text-slate-400">Advertisement</p>
+    <p class="mt-1 text-xs font-bold text-slate-500">{label} · {size}</p>
+  </div>
+</div>

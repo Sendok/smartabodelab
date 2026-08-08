@@ -1,0 +1,19 @@
+---
+interface Heading { depth: number; slug: string; text: string }
+interface Props { headings: Heading[] }
+const { headings } = Astro.props;
+const visible = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+{visible.length > 0 && (
+  <details open class="not-prose rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5">
+    <summary class="cursor-pointer list-none text-sm font-extrabold text-brand-dark">
+      <span class="inline-flex items-center gap-2">
+        <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+        Table of contents
+      </span>
+    </summary>
+    <ol class="mt-4 grid gap-2 text-sm leading-5 text-slate-700">
+      {visible.map((heading) => <li class:list={[heading.depth === 3 && "ml-4"]}><a href={`#${heading.slug}`} class="font-semibold text-slate-700 hover:text-brand-dark hover:underline underline-offset-4">{heading.text}</a></li>)}
+    </ol>
+  </details>
+)}

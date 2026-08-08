@@ -1,0 +1,19 @@
+---
+import type { CollectionEntry } from "astro:content";
+interface Props { cluster: CollectionEntry<"clusters">; articleCount?: number }
+const { cluster, articleCount = 0 } = Astro.props;
+const iconPaths = {
+  energy: "M13 2 4.8 13H11l-1 9 9.2-12H13l0-8Z",
+  automation: "M4 7h16v10H4z M8 3v4 M16 3v4 M8 17v4 M16 17v4",
+  urban: "M4 21V8l5-3v16M9 21V3l7 3v15M16 21v-9l4-2v11",
+  reviews: "m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9L12 21l-5.4 2.8 1-6.1-4.4-4.3 6.1-.9L12 3Z"
+};
+---
+<a href={`/topics/${cluster.id}`} class="group block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-lg">
+  <div class="grid size-10 place-items-center rounded-xl bg-emerald-50 text-brand-dark">
+    <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d={iconPaths[cluster.data.icon]} /></svg>
+  </div>
+  <h3 class="mt-4 text-xl font-black tracking-tight text-ink group-hover:text-brand-dark">{cluster.data.title}</h3>
+  <p class="mt-2 text-sm leading-6 text-slate-600">{cluster.data.shortDescription}</p>
+  <div class="mt-4 flex items-center justify-between gap-3 text-xs font-bold"><span class="text-slate-500">{articleCount} {articleCount === 1 ? "article" : "articles"}</span><span class="text-brand-dark">Explore →</span></div>
+</a>

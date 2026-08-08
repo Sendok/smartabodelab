@@ -1,0 +1,68 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { formatDate } from "../utils/content";
+
+interface Props {
+  post: CollectionEntry<"articles">;
+  author: CollectionEntry<"authors">;
+  reviewer?: CollectionEntry<"authors">;
+  factChecker?: CollectionEntry<"authors">;
+}
+
+const { post, author, reviewer, factChecker } = Astro.props;
+const methodLabels: Record<string, string> = {
+  "editorial-research": "Editorial research",
+  "hands-on-testing": "Hands-on testing",
+  "first-hand-experience": "First-hand experience",
+  "expert-analysis": "Expert analysis"
+};
+const methodLabel = post.data.creationMethod ? methodLabels[post.data.creationMethod] : undefined;
+const hasProcessDetails = Boolean(methodLabel || post.data.methodologyNote || post.data.aiAssisted || post.data.affiliateDisclosure);
+---
+
+<section class="not-prose mt-7 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" aria-labelledby="transparency-title">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <p id="transparency-title" class="text-xs font-black uppercase tracking-[0.16em] text-brand-dark">Editorial transparency</p>
+      <p class="mt-1 text-sm font-semibold text-slate-600">Who worked on this article and how it was handled.</p>
+    </div>
+    <a href="/editorial-policy" class="text-xs font-extrabold text-brand-dark hover:underline underline-offset-4">Editorial policy →</a>
+  </div>
+
+  <dl class="mt-5 grid gap-4 border-t border-slate-100 pt-5 sm:grid-cols-2">
+    <div>
+      <dt class="text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">Written by</dt>
+      <dd class="mt-1 text-sm font-extrabold text-ink"><a href={`/author/${author.id}`} rel="author" class="hover:text-brand-dark">{author.data.name}</a></dd>
+    </div>
+
+    {reviewer && (
+      <div>
+        <dt class="text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">Editorial review</dt>
+        <dd class="mt-1 text-sm font-extrabold text-ink"><a href={`/author/${reviewer.id}`} class="hover:text-brand-dark">{reviewer.data.name}</a>{post.data.reviewedAt && <span class="font-semibold text-slate-500"> · {formatDate(post.data.reviewedAt)}</span>}</dd>
+      </div>
+    )}
+
+    {factChecker && (
+      <div>
+        <dt class="text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">Fact checked by</dt>
+        <dd class="mt-1 text-sm font-extrabold text-ink"><a href={`/author/${factChecker.id}`} class="hover:text-brand-dark">{factChecker.data.name}</a>{post.data.factCheckedAt && <span class="font-semibold text-slate-500"> · {formatDate(post.data.factCheckedAt)}</span>}</dd>
+      </div>
+    )}
+
+    {methodLabel && (
+      <div>
+        <dt class="text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">Creation method</dt>
+        <dd class="mt-1 text-sm font-extrabold text-ink">{methodLabel}</dd>
+      </div>
+    )}
+  </dl>
+
+  {hasProcessDetails && (
+    <div class="mt-5 grid gap-3 border-t border-slate-100 pt-5 text-sm leading-6 text-slate-600">
+      {post.data.methodologyNote && <p><strong class="text-ink">Method note:</strong> {post.data.methodologyNote}</p>}
+      {post.data.originalResearch && <p><strong class="text-ink">Original research:</strong> This article includes original analysis, measurements, testing, or reporting identified in the article.</p>}
+      {post.data.affiliateDisclosure && <p><strong class="text-ink">Affiliate disclosure:</strong> This article may contain affiliate links. Editorial judgments are made independently. <a href="/affiliate-disclosure" class="font-extrabold text-brand-dark hover:underline underline-offset-4">Read our disclosure.</a></p>}
+      {post.data.aiAssisted && <p><strong class="text-ink">AI assistance:</strong> {post.data.aiDisclosure ?? "AI tools assisted part of the production workflow. A human editor remains responsible for the published content."}</p>}
+    </div>
+  )}
+</section>
